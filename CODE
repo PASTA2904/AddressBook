@@ -1,0 +1,139 @@
+import javax.swing.*;
+import java.util.*;
+import java.io.*;
+
+
+class PersonInfo {
+    String name;
+    String email;
+    String phoneNumber;
+
+    PersonInfo(String n, String e, String p) {
+        name = n;
+        email = e;
+        phoneNumber = p;
+    }
+
+    // display on GUI
+    void display() {
+        JOptionPane.showMessageDialog(null, "Name: " + name + "\neMail: " + email + "\nPhone no: " + phoneNumber);
+    }
+}
+
+class info {
+    ArrayList persons;
+
+    info() {
+        persons = new ArrayList();
+        loadPersons();
+    }
+
+    // adding a Person Object
+    void addPerson() {
+        String name = JOptionPane.showInputDialog("Enter Name:");
+        String add = JOptionPane.showInputDialog("Enter Address:");
+        String pNum = JOptionPane.showInputDialog("Enter PhoneNo:");
+        // creating a personInfo object
+        PersonInfo p = new PersonInfo(name, add, pNum);
+        persons.add(p);
+    }
+
+    // deleting a person
+    void deletePerson(String n) {
+        for (int i = 0; i < persons.size(); i++) {
+            PersonInfo p = (PersonInfo) persons.get(i);
+            if (n.equals(p.name)) {
+                persons.remove(i);
+            }
+        }
+    }
+    // searching for a person
+    void searchPerson(String n) {
+        for (int i = 0; i < persons.size(); i++) {
+            PersonInfo p = (PersonInfo) persons.get(i);
+            if (n.equals(p.name)) {
+                p.display();
+            }
+        }
+    }
+
+    // saving Person Record
+    void savePersons() {
+        try {
+            PersonInfo p;
+            String line;
+            FileWriter fw = new FileWriter("persons.txt");
+            PrintWriter pw = new PrintWriter(fw);
+            for (int i = 0; i <=persons.size(); i++) {
+                p = (PersonInfo) persons.get(i);
+                line = p.name + "," + p.email + "," + p.phoneNumber;
+                pw.println(line);
+            }
+            pw.flush();
+            pw.close();
+            fw.close();
+        } catch(IOException ioEx) {
+            System.out.println(ioEx);
+        }
+    }
+
+
+    // loading Person Record from .txt file
+    void loadPersons() {
+        String[] tokens = null;
+        String name, add, ph;
+        try {
+            FileReader fr = new FileReader("persons.txt");
+            BufferedReader br = new BufferedReader(fr);
+            String line = br.readLine();
+            while (line != null) {
+                tokens = line.split(",");
+                name = tokens[0];
+                add = tokens[1];
+                ph = tokens[2];
+                PersonInfo p = new PersonInfo(name, add, ph);
+                persons.add(p);
+                line = br.readLine();
+            }
+            br.close();
+            fr.close();
+        } catch(IOException ioEx) {
+            System.out.println(ioEx);
+        }
+    }
+
+}
+
+
+public class AddressBook {
+    public static void main(String[] args) {
+        info adb = new info();
+        String input, s;
+        int ch;
+
+        while (true) {
+            input = JOptionPane.showInputDialog("Enter 1 to Add\nEnter 2 to Search\nEnter 3 to Delete\nEnter 4 to Exit");
+            ch = Integer.parseInt(input);
+
+
+            switch (ch) {
+                case 1:
+                    adb.addPerson();
+                    break;
+                case 2:
+                    s = JOptionPane.showInputDialog("Enter name to search:");
+                    adb.searchPerson(s);
+                    break;
+                case 3:
+                    s = JOptionPane.showInputDialog("Enter name to delete:");
+                    adb.deletePerson(s);
+                    break;
+                case 4:
+                    adb.savePersons();
+                    System.exit(0);
+            }
+
+        }
+
+    }
+}
